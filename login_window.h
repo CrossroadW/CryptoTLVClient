@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include "tcpmgr.h"
+
 class LoginWindow : public QWidget {
     Q_OBJECT
 
@@ -16,11 +17,15 @@ public:
         setupUI();
         applyStyle(); // 应用样式
         m_tcpManager = new TcpManager(this);
-        m_tcpManager->registerHandler<LoginHandler>();
+        // m_tcpManager->registerHandler<LoginHandler>();
         connect(m_tcpManager, &TcpManager::connected, this, [] {
             qDebug() << "conencted is success";
         });
         m_tcpManager->m_handler->waitConnect(QHostAddress::LocalHost, 5555);
+    }
+
+    ~LoginWindow() {
+        m_tcpManager->unregisterCallback<LoginHandler>();
     }
 
 protected:
@@ -141,10 +146,13 @@ private slots:
                 }
             }
         };
-
+        auto req = "123";
+        m_tcpManager->registerCallback(MessageType::Login, [=](QJsonObject json) {
+            qDebug() << "LoginHandler::handle:" << json;
+            qDebug() << req;
+        });
         // 发送请求
         m_tcpManager->sendMessage(loginReq);
-
         qDebug() << "Login request sent:" << loginReq;
 
         // 等待服务器的回应（可以适当调整时间，或添加超时机制）

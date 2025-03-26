@@ -111,7 +111,20 @@ public:
             static_assert(false, "not handler for MessageType");
         }
     }
-
+    void registerCallback(MessageType type,std::function<void(QJsonObject)> callback) {
+        if (type == MessageType::Login) {
+            m_loginHandler = callback;
+        }
+    }
+    template<MessageHandlerConcept Handler>
+    void unregisterCallback() {
+        if constexpr (Handler::Type == MessageType::Login) {
+            // 通过 lambda 自动绑定静态方法
+            m_loginHandler = {};
+        } else {
+            static_assert(false, "not handler for MessageType");
+        }
+    }
 Q_SIGNALS:
     void connected();
 
