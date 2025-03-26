@@ -1,0 +1,6 @@
+Checks: >
+  -*,clang-analyzer-*,bugprone-*,
+  -bugprone-unused-return-value
+  -*,clang-analyzer-*,
+  -readability-make-member-function-const,  # 禁用成员函数未声明const的检查
+  -cppcoreguidelines-avoid-const-or-ref-data-members  # 禁用const成员变量的检查
