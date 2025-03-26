@@ -22,11 +22,32 @@
 - `MessageHandler`：消息处理的基类，使用 CRTP 模式处理不同类型的消息。
 - `LoginHandler`：登录相关的消息处理程序。
 - `EnTlvProtocolHandler`：处理 TLV 协议的编解码。
+## 例子
+```c++
+class LoginHandler : public MessageHandler<LoginHandler> {
+    public:
+        static constexpr auto Type = MessageType::Login; // 登录模块的起始类型
 
-## 编译与运行
+        static void handle(QJsonObject json) {
+            // 通过 MessageType 来判断处理不同的消息
+            switch (int msgId = json["id"].toInt(); static_cast<MessageType>(msgId)) {
+                case MessageType::LoginRsp:
+                    qDebug() << "处理登录响应 (LoginRsp):" << json;
+                    break;
+                default:
+                    qWarning() << "没有匹配的处理程序，ID:" << msgId;
+                    break;
+            }
+        }
+    };
+    
+...
 
+m_tcpManager = new TcpManager(this);
+m_tcpManager->registerHandler<LoginHandler>();
+```
 ### 克隆项目
 
 ```bash
-git clone https://github.com/yourusername/CryptoTLVClient.git
+git clone https://github.com/CrossroadW/CryptoTLVClient
 cd CryptoTLVClient
