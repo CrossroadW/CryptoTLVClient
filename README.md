@@ -46,8 +46,15 @@ class LoginHandler : public MessageHandler<LoginHandler> {
 m_tcpManager = new TcpManager(this);
 m_tcpManager->registerHandler<LoginHandler>();
 ```
-### 克隆项目
+### 运行
 
 ```bash
+
 git clone https://github.com/CrossroadW/CryptoTLVClient
 cd CryptoTLVClient
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/home/awe/Qt/6.8.1/gcc_64
+cmake --build build -j 6
+
+# 测试服务器
+python ./server.py
+

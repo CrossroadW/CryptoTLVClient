@@ -11,9 +11,29 @@
 #include <openssl/pem.h>
 
 
+std::vector<unsigned char> base64Decode(const std::string &encoded_data) {
+    // 创建一个BIO对象，用于Base64解码
+    BIO *b64 = BIO_new(BIO_f_base64());
+    BIO *bio = BIO_new_mem_buf(encoded_data.data(), encoded_data.size());
+    bio = BIO_push(b64, bio);
+
+    // 禁用Base64解码时的换行符处理
+    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+
+    // 读取解码后的数据
+    std::vector<unsigned char> decoded_data(encoded_data.size());  // 分配足够大的空间
+    int decoded_size = BIO_read(bio, decoded_data.data(), encoded_data.size());
+
+    // 可能解码后的数据量比原始Base64字符串小，调整大小
+    decoded_data.resize(decoded_size);
+
+    BIO_free_all(bio);
+
+    return decoded_data;
+}
 
 void AesCrypto::generateRandomKeyIV(std::vector<unsigned char> &key,
-    std::vector<unsigned char> &iv) {
+                                    std::vector<unsigned char> &iv) {
     if (RAND_bytes(key.data(), key.size()) != 1 || RAND_bytes(iv.data(), iv.size()) != 1) {
         throw std::runtime_error("Failed to generate random key or IV");
     }
